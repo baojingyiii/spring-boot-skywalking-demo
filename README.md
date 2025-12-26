@@ -48,7 +48,7 @@
 ```bash
 git clone https://github.com/baojingyiii/spring-boot-skywalking-demo.git
 cd spring-boot-skywalking-demo
-
+```
 ### 2. 部署SkyWalking监控系统
 ```bash
 # 一键启动所有服务
@@ -139,8 +139,9 @@ services:
 > 来源：https://github.com/apache/skywalking-docker/blob/master/archive/8/8.3.0/compose-es7/docker-compose.yml
 >
 
-#### my-spring-app
-在本机启动app,以下为示例
+### 示例应用接口
+
+项目包含一个简单的测试接口：
 ```java
 package com.baojingyi.prom.controller;
 
@@ -160,6 +161,7 @@ public class HelloController {
 ```bash 
 java -jar my-spring-app-1.0.0.jar    // 前台显示（测试应用是否可用）
 ```
+访问测试：`http://localhost:8888/hello`
 ![my-spring-app](./docs/images/my-spring-app.png)
 
 ### 3. 编译Spring Boot应用
@@ -171,7 +173,7 @@ tar -zxvf apache-maven-3.8.9-bin.tar.gz
 mv apache-maven-3.8.9 ~/maven-3.8.9
 
 # 2. 只修改当前用户的环境变量
-echo 'export PATH=~/maven-3.8.8/bin:$PATH' >> ~/.bashrc
+echo 'export PATH=~/maven-3.8.9/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 
 # 3. 验证
@@ -187,17 +189,18 @@ yum install -y java-1.8.0-openjdk-devel
 mvn clean package -DskipTests  // target目录下会生成jar包
 ```
 
-### 启动应用并集成SkyWalking探针
+### 4. 启动应用并集成SkyWalking探针
 ```bash
 nohup java -javaagent:skywalking-agent.jar -jar ../spring-boot-demo/target/my-spring-app-1.0.0.jar &    // jar包放置探针并启动
-tail -f nohup.out   // 查看日志
 ```
+## 📊 监控效果
+
+### SkyWalking UI 界面
 ![skywalking-ui](./docs/images/skywalking-ui.png)
+### 应用拓扑图
 ![skywalking-拓扑图](./docs/images/skywalking-拓扑图.png)
-注意修改agent
 
 ## 📁 项目结构
-
 ```
 spring-boot-skywalking-demo/
 ├── spring-boot-demo/          # Spring Boot应用源码
@@ -217,7 +220,6 @@ spring-boot-skywalking-demo/
 ```
 
 ## 🔧 配置说明
-
 ### SkyWalking Agent配置
 
 修改 `agent/config/agent.config`：
@@ -235,4 +237,122 @@ collector.backend_service=172.26.0.3:11800
 # 获取容器IP的方法：
 # docker network inspect spring-boot-skywalking-demo_default
 ```
+## 🔍 故障排查
 
+### 常见问题
+
+1. **端口冲突**
+
+   ```bash
+   # 检查端口占用
+   netstat -ntpl
+
+   # 停止冲突进程
+   kill -9 <PID>
+   ```
+
+2. **网络连接问题**
+
+   ```bash
+   # 测试OAP连接
+   telnet 172.26.0.3 11800
+
+   # 检查容器网络
+   docker network inspect spring-boot-skywalking-demo_default
+   ```
+
+3. **应用无法启动**
+   
+   ```bash
+   # 查看详细日志
+   tail -f nohup.out
+
+   # 检查Java版本
+   java -version
+   ```
+
+### 服务状态检查
+```bash
+# 检查所有服务
+docker compose ps
+
+# 查看日志
+docker compose logs -f
+
+# 检查SkyWalking UI
+curl -I http://localhost:8080
+```
+
+## 🧪 测试与验证
+
+### 1. 验证应用运行
+
+```bash
+# 测试应用接口
+curl http://localhost:8888/hello
+
+# 预期输出: "hello"
+```
+
+### 2. 验证SkyWalking监控
+
+1. 访问 `http://localhost:8080`
+2. 在服务列表中找到 `my-spring-app`
+3. 点击进入查看监控数据
+4. 测试接口触发链路追踪
+
+### 3. 性能测试
+
+```bash
+# 使用ab进行简单压力测试
+yum install httpd-tools
+ab -n 100 -c 10 http://localhost:8888/hello
+
+# 观察SkyWalking中的响应时间和QPS
+[root@master spring-boot-demo]# ab -n 100 -c 10 http://localhost:8888/hello
+Server Software:
+Server Hostname:        localhost
+Server Port:            8888
+
+Document Path:          /hello
+Document Length:        5 bytes
+
+Concurrency Level:      10
+Time taken for tests:   0.545 seconds
+Complete requests:      100
+Failed requests:        0
+Write errors:           0
+Total transferred:      13700 bytes
+HTML transferred:       500 bytes
+Requests per second:    183.62 [#/sec] (mean)
+Time per request:       54.461 [ms] (mean)
+Time per request:       5.446 [ms] (mean, across all concurrent requests)
+Transfer rate:          24.57 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   4.2      2      22
+Processing:     8   44  27.1     38     126
+Waiting:        1   34  21.5     31     101
+Total:         12   48  26.6     40     127
+```
+
+## 📚 学习资源
+
+- [SkyWalking官方文档](https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-docker/)
+- [Spring Boot文档](https://spring.io/projects/spring-boot)
+- [Docker Compose文档](https://docs.docker.com/compose/)
+- [APM概念介绍](https://skywalking.apache.org/docs/main/latest/en/concepts-and-designs/overview/)
+
+## 👥 作者
+
+**baojingyiii**
+
+- GitHub: [@baojingyiii](https://github.com/baojingyiii)
+
+## 🙏 致谢
+
+- [Apache SkyWalking](https://skywalking.apache.org/)
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Elasticsearch](https://www.elastic.co/)
+- [Docker](https://www.docker.com/)
