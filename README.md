@@ -1,16 +1,67 @@
 # spring-boot-skywalking-demo
-> 部署skywalking,在本地编译并启动一个hello的my-spring-app,并加入探针
->
-> 官方文档 https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-docker/
+> `官方文档 https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-docker/`
 > 
+> [![Docker](https://img.shields.io/badge/Docker-✔-2496ED.svg)](https://www.docker.com/)
+> 
+>  完整的Spring Boot应用集成SkyWalking APM监控解决方案
+> 
+> [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.0-brightgreen)](https://spring.io/)
+> 
+> [![SkyWalking](https://img.shields.io/badge/SkyWalking-8.3.0-orange)](https://skywalking.apache.org/)
+>
+> ![java 1.8.0](https://img.shields.io/static/v1?label=java&message=1.8.0&color=blue)
+>
+> ![maven 3.8.9](https://img.shields.io/static/v1?label=maven&message=3.8.9&color=blue)
+>
+> ![spring-boot 2.7.0](https://img.shields.io/static/v1?label=spring-boot&message=2.7.0&color=blue)
 
-注意：基于java8，maven 3.8.9,springboot4.0.0
+## 📋 项目简介
 
-## 一键部署skywalking
+这是一个完整的Spring Boot应用监控示例，使用Apache SkyWalking进行应用性能管理和链路追踪。
+
+### ✨ 特性
+- 🚀 一键部署完整的SkyWalking监控环境
+- 🔍 Spring Boot应用无缝集成SkyWalking探针
+- 📊 可视化的应用性能监控和链路追踪
+- 🐳 基于Docker Compose的容器化部署
+- 📈 支持Elasticsearch作为存储后端
+
+## 🏗️ 技术栈
+
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| Java | 1.8.0 | 运行环境 |
+| Spring Boot | 2.7.0 | Web应用框架 |
+| SkyWalking | 8.3.0 | APM监控系统 |
+| Elasticsearch | 7.5.0 | 数据存储 |
+| Docker | Latest | 容器化部署 |
+
+## 🚀 快速开始
+
+### 前置要求
+- Docker 20.10+
+- Docker Compose 2.0+
+- Java 1.8+
+- Maven 3.8+
+
+### 1. 克隆项目
 ```bash
+git clone https://github.com/baojingyiii/spring-boot-skywalking-demo.git
+cd spring-boot-skywalking-demo
+
+### 2. 部署SkyWalking监控系统
+```bash
+# 一键启动所有服务
 docker compose up -d
+
+# 查看服务状态
+docker compose ps
+
+# 访问SkyWalking UI
+# 地址: http://localhost:8080
 ```
-docker-compose.yml
+
+* docker-compose.yml
 ```yaml
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -88,7 +139,7 @@ services:
 > 来源：https://github.com/apache/skywalking-docker/blob/master/archive/8/8.3.0/compose-es7/docker-compose.yml
 >
 
-## my-spring-app
+#### my-spring-app
 在本机启动app,以下为示例
 ```java
 package com.baojingyi.prom.controller;
@@ -106,7 +157,12 @@ public class HelloController {
 
 }
 ```
-## 编译
+```bash 
+java -jar my-spring-app-1.0.0.jar    // 前台显示（测试应用是否可用）
+```
+![my-spring-app](./docs/images/my-spring-app.png)
+
+### 3. 编译Spring Boot应用
 > maven
 ```bash
 # 1. 下载解压到用户目录
@@ -125,23 +181,58 @@ mvn -v
 ```bash
 yum install -y java-1.8.0-openjdk-devel
 ```
+
 > 编译，生成my-spring-app-1.0.0.jar
 ```bash 
 mvn clean package -DskipTests  // target目录下会生成jar包
 ```
-> 启动
+
+### 启动应用并集成SkyWalking探针
 ```bash
-# 测试应用是否可用：java -jar my-spring-app-1.0.0.jar    // 前台显示
 nohup java -javaagent:skywalking-agent.jar -jar ../spring-boot-demo/target/my-spring-app-1.0.0.jar &    // jar包放置探针并启动
 tail -f nohup.out   // 查看日志
 ```
+![skywalking-ui](./docs/images/skywalking-ui.png)
+![skywalking-拓扑图](./docs/images/skywalking-拓扑图.png)
 注意修改agent
-```bash
-...
-agent.service_name=${SW_AGENT_NAME:my-spring-app}  //skywalking-ui显示的应用名
-...
-collector.backend_service=${SW_AGENT_COLLECTOR_BACKEND_SERVICES:172.26.0.3:11800}
+
+## 📁 项目结构
+
+```
+spring-boot-skywalking-demo/
+├── spring-boot-demo/          # Spring Boot应用源码
+│   ├── src/
+│   ├── pom.xml
+│   └── target/
+├── agent/                     # SkyWalking Agent配置
+│   ├── skywalking-agent.jar
+│   └── config/
+│       └── agent.config      # Agent配置文件
+├── docker-compose.yml        # SkyWalking容器编排
+├── dockerfile               # 应用Docker镜像
+└── docs/                    # 文档和截图
+    └── images/
+        ├── skywalking-ui.png
+        └── skywalking-topology.png
+```
+
+## 🔧 配置说明
+
+### SkyWalking Agent配置
+
+修改 `agent/config/agent.config`：
+
+```properties
+# 服务名称（在SkyWalking UI中显示）
+agent.service_name=my-spring-app
+
+# OAP服务器地址
+# 注意：如果应用运行在宿主机，需要使用容器IP
+collector.backend_service=172.26.0.3:11800  
          // 由于skywalking为容器，而my-spring-app在本机。使用docker-compose会自动产生network
          // docker network inspect spring-boot-skywalking-demo_default:查看oap的ip
-...
+
+# 获取容器IP的方法：
+# docker network inspect spring-boot-skywalking-demo_default
 ```
+
