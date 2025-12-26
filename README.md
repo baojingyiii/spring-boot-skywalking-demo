@@ -1,9 +1,9 @@
-# spring-boot-skywalking-demo
-> `官方文档 https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-docker/`
-> 
+# spring-boot-skywalking-demo 
 > [![Docker](https://img.shields.io/badge/Docker-✔-2496ED.svg)](https://www.docker.com/)
-> 
->  完整的Spring Boot应用集成SkyWalking APM监控解决方案
+>
+> 官方文档 https://skywalking.apache.org/docs/main/latest/en/setup/backend/backend-docker/
+
+完整的Spring Boot应用集成SkyWalking APM监控解决方案：在本机启动spring boot应用，skywalking追踪监控（skywalking容器）
 > 
 > [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.0-brightgreen)](https://spring.io/)
 > 
