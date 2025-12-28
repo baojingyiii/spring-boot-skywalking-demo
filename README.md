@@ -193,6 +193,7 @@ mvn clean package -DskipTests  // target目录下会生成jar包
 ```bash
 nohup java -javaagent:skywalking-agent.jar -jar ../spring-boot-demo/target/my-spring-app-1.0.0.jar &    // jar包放置探针并启动
 ```
+> ❗下载指定版本的SkyWalking agent:`wget https://archive.apache.org/dist/skywalking/8.3.0/apache-skywalking-apm-8.3.0.tar.gz `
 ## 📊 监控效果
 
 ### SkyWalking UI 界面
