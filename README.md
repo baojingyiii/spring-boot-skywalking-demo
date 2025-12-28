@@ -5,7 +5,7 @@
 
 完整的Spring Boot应用集成SkyWalking APM监控解决方案：在本机启动spring boot应用，skywalking追踪监控（skywalking容器）
 > 
-> [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.0-brightgreen)](https://spring.io/)
+> ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-7.5.0-brightgreen)
 > 
 > [![SkyWalking](https://img.shields.io/badge/SkyWalking-8.3.0-orange)](https://skywalking.apache.org/)
 >
@@ -13,7 +13,7 @@
 >
 > ![maven 3.8.9](https://img.shields.io/static/v1?label=maven&message=3.8.9&color=blue)
 >
-> ![spring-boot 2.7.0](https://img.shields.io/static/v1?label=spring-boot&message=2.7.0&color=blue)
+> [![spring-boot 2.7.0](https://img.shields.io/static/v1?label=spring-boot&message=2.7.0&color=blue)](https://spring.io/)
 
 ## 📋 项目简介
 
